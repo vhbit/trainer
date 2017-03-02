@@ -37,8 +37,14 @@ module Trainer
           to_path = path.gsub(".plist", config[:extension])
         end
 
+        kind = config[:kind]
         tp = Trainer::TestParser.new(path, config)
-        File.write(to_path, tp.to_junit)
+        report = nil
+        report = tp.to_junit if kind == 'junit'
+        report = tp.to_phab if kind == 'phab'
+        UI.user_error!("Unknown type '#{kind}") if report.nil?
+
+        File.write(to_path, report)
         puts "Successfully generated '#{to_path}'"
 
         return_hash[to_path] = tp.tests_successful?
@@ -61,6 +67,11 @@ module Trainer
     # Returns the JUnit report as String
     def to_junit
       JunitGenerator.new(self.data).generate
+    end
+
+    # Returns the Phabricator report as String
+    def to_phab
+      PhabGenerator.new(self.data).generate
     end
 
     # @return [Bool] were all tests successful? Is false if at least one test failed

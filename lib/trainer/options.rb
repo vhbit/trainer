@@ -23,12 +23,20 @@ module Trainer
                                      verify_block: proc do |value|
                                        UI.user_error!("extension must contain a `.`") unless value.include?(".")
                                      end),
+        FastlaneCore::ConfigItem.new(key: :kind,
+                                     short_option: "-k",
+                                     env_name: "TRAINER_KIND",
+                                     default_value: "junit",
+                                     description: "The type for report. Usually junit or phab",
+                                     verify_block: proc do |value|
+                                       UI.user_error!("type should be either `junit` or `phab`") unless ['junit', 'phab'].include?(value)
+                                     end),
         FastlaneCore::ConfigItem.new(key: :output_directory,
                                      short_option: "-o",
                                      env_name: "TRAINER_OUTPUT_DIRECTORY",
                                      default_value: nil,
                                      optional: true,
-                                     description: "Directoy in which the xml files should be written to. Same directory as source by default"),
+                                     description: "Directory in which the report files should be written to. Same directory as source by default"),
         FastlaneCore::ConfigItem.new(key: :fail_build,
                                      env_name: "TRAINER_FAIL_BUILD",
                                      description: "Should this step stop the build if the tests fail? Set this to false if you're handling this with a test reporter",

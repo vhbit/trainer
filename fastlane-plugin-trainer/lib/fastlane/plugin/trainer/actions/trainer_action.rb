@@ -1,5 +1,10 @@
 module Fastlane
   module Actions
+    module SharedValues
+      TRAINER_GENERATED_REPORT_FILES = :TRAINER_GENERATED_REPORT_FILES
+      TRAINER_GENERATED_REPORT_FILE = :TRAINER_GENERATED_REPORT_FILE
+    end
+
     class TrainerAction < Action
       def self.run(params)
         require "trainer"
@@ -9,6 +14,10 @@ module Fastlane
 
         fail_build = params[:fail_build]
         resulting_paths = ::Trainer::TestParser.auto_convert(params)
+        report_paths = resulting_paths.collect { |path, _| path }
+        Actions.lane_context[Actions::SharedValues::TRAINER_GENERATED_REPORT_FILES] = report_paths
+        Actions.lane_context[Actions::SharedValues::TRAINER_GENERATED_REPORT_FILE] = report_paths.last
+
         resulting_paths.each do |path, test_successful|
           UI.test_failure!("Unit tests failed") if fail_build && !test_successful
         end
