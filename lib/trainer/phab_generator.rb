@@ -24,7 +24,7 @@ module Trainer
               failure[:failure_message]
             end
             phab_case[:details] = messages.join("\n")
-            phab_case[:path] = failure[:file_name]
+            # phab_case[:path] = failure[:file_name]
           end
           json_data.push(phab_case)
         end
